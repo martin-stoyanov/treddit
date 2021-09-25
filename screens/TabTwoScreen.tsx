@@ -20,10 +20,7 @@ export default function TabTwoScreen() {
     try {
       const s = await RedditAPI.getFeed(data.subreddit);
       setRedditData(s['data']);
-      translate();
-    } catch (e) {
-      // setSchedule(null);
-    }
+    } catch (e) {}
   }
 
   return (

@@ -1,7 +1,15 @@
 import * as React from 'react';
-import { Dimensions, ScrollView, StyleSheet } from 'react-native';
+import {
+  Button,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { ScreenContainer } from 'react-native-screens';
+import { MaterialIcons } from '@expo/vector-icons';
 
+import { translate } from '../api/translate-api';
 import { Child, ChildData } from '../types/subredditData';
 import { Text, TextProps, View } from './Themed';
 
@@ -11,17 +19,16 @@ type PostPreviewProps = {
 export const PostPreview = (props: PostPreviewProps) => {
   const { id: postid } = props.data.data;
 
-  let { title } = props.data.data;
+  // the .replaceAll removes the quotations on either end of the string
+  const title: string = props.data.data.title.replaceAll('^"|"$', '');
 
   return (
     <View style={styles.container}>
       <Text key={`${postid}-title`} style={styles.title}>
-        {/* the .replaceAll removes the quotations on either end of the string */}
-        {title.replaceAll('^"|"$', '')}
+        {title}
       </Text>
       <Text key={postid} style={styles.post}>
-        {/* the .replaceAll removes the quotations on either end of the string */}
-        {title.replaceAll('^"|"$', '')}aaaaa
+        {title}
       </Text>
       <View
         style={{
@@ -31,7 +38,12 @@ export const PostPreview = (props: PostPreviewProps) => {
           marginRight: 10,
         }}
       >
-        <Text>&#x21c5;</Text>
+        <TouchableOpacity
+          onPress={(e) => translate(title)}
+          aria-label="translate"
+        >
+          <MaterialIcons name="translate" size={24} color="black" />
+        </TouchableOpacity>
       </View>
     </View>
   );
