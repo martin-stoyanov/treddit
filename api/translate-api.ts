@@ -4,8 +4,8 @@ import { TRANSLATE_API_KEY } from 'react-native-dotenv';
 
 var endpoint = 'https://api.cognitive.microsofttranslator.com';
 
-export const translate = (text: string) => {
-  axios({
+export const translate = async (text: string) => {
+  const response = await axios({
     baseURL: endpoint,
     url: '/translate',
     method: 'post',
@@ -24,14 +24,13 @@ export const translate = (text: string) => {
       },
     ],
     responseType: 'json',
-  }).then(function (response: { data: any }) {
-    console.log(JSON.stringify(response.data, null, 4));
-    detectLanguage(text);
   });
+  // console.log(JSON.stringify(response, null, 4));
+  return detectLanguage(text);
 };
 
-const detectLanguage = (text: string) => {
-  axios({
+const detectLanguage = async (text: string) => {
+  const response = await axios({
     baseURL: endpoint,
     url: '/translate',
     method: 'post',
@@ -49,8 +48,8 @@ const detectLanguage = (text: string) => {
       },
     ],
     responseType: 'json',
-  }).then(function (response) {
-    console.log(text);
-    console.log(JSON.stringify(response.data, null, 4));
   });
+  // console.log(text);
+  // console.log(JSON.stringify(response.data[0].translations[0].text, null, 4));
+  return JSON.stringify(response.data[0].translations[0].text, null, 4);
 };

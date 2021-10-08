@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Dimensions,
@@ -6,30 +6,49 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { ScreenContainer } from 'react-native-screens';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { translate } from '../api/translate-api';
-import { Child, ChildData } from '../types/subredditData';
-import { Text, TextProps, View } from './Themed';
+import { Child } from '../types/subredditData';
+import { usePrevious } from '../hooks/usePrevious';
+import { Text, View } from './Themed';
 
 type PostPreviewProps = {
   data: Child;
 };
+
 export const PostPreview = (props: PostPreviewProps) => {
-  const { id: postid } = props.data.data;
+  const postData = props.data.data;
+  const { id: postid } = postData;
 
   // the .replaceAll removes the quotations on either end of the string
-  const title: string = props.data.data.title.replaceAll('^"|"$', '');
+  const [title, setTitle] = useState(postData.title.replaceAll('^"|"$', ''));
+  const [isTitleTranslated, setIsTitleTranslated] = useState(false);
+  const prevTitle = usePrevious(title);
+
+  const content: string | null =
+    postData.selftext.replaceAll('^"|"$', '') !== title
+      ? postData.selftext.replaceAll('^"|"$', '')
+      : '';
+
+  const updateTitle = () => {
+    !isTitleTranslated
+      ? translate(title).then((e) => setTitle(e.replaceAll('^"|"$', '')))
+      : setTitle(prevTitle!);
+
+    setIsTitleTranslated(() => !isTitleTranslated);
+  };
 
   return (
     <View style={styles.container}>
       <Text key={`${postid}-title`} style={styles.title}>
         {title}
       </Text>
-      <Text key={postid} style={styles.post}>
-        {title}
-      </Text>
+      {content ? (
+        <Text key={postid} style={styles.post}>
+          {content}
+        </Text>
+      ) : null}
       <View
         style={{
           justifyContent: 'center',
@@ -38,10 +57,7 @@ export const PostPreview = (props: PostPreviewProps) => {
           marginRight: 10,
         }}
       >
-        <TouchableOpacity
-          onPress={(e) => translate(title)}
-          aria-label="translate"
-        >
+        <TouchableOpacity onPress={updateTitle} aria-label="translate">
           <MaterialIcons name="translate" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -51,7 +67,7 @@ export const PostPreview = (props: PostPreviewProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: Math.min(Dimensions.get('window').width - 5, 450),
+    width: Math.min(Dimensions.get('window').width - 35, 450),
     shadowOpacity: 0.25,
     shadowRadius: 2,
     // blurRadius: 7,
