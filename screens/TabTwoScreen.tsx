@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, GestureResponderEvent, StyleSheet } from 'react-native';
+import {
+  Button,
+  Dimensions,
+  GestureResponderEvent,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Formik } from 'formik';
 
 import EditScreenInfo from '../components/EditScreenInfo';
@@ -27,22 +34,29 @@ export default function TabTwoScreen() {
     <View style={styles.container}>
       <Formik initialValues={{ subreddit: '' }} onSubmit={getSubredditPosts}>
         {({ handleChange, handleSubmit, values }) => (
-          <View>
+          <View style={styles.searchContainer}>
             <TextInput
-              style={styles.input}
+              style={styles.searchInput}
               value={values.subreddit}
               onChangeText={handleChange('subreddit')}
               placeholder="&#128269;subreddit"
               placeholderTextColor="#757575"
             />
-            <Button
-              title="Submit"
+            <TouchableOpacity
               onPress={
                 handleSubmit as unknown as (
                   event: GestureResponderEvent,
                 ) => void
               }
-            />
+              aria-label="search"
+            >
+              <MaterialIcons
+                name="send"
+                size={18}
+                color="#757575"
+                style={{ paddingHorizontal: 15 }}
+              />
+            </TouchableOpacity>
           </View>
         )}
       </Formik>
@@ -68,27 +82,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    // justifyContent: 'center',
   },
-  input: {
-    marginTop: 35,
-    paddingLeft: 100,
-    width: 264,
+  searchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: Math.min(Dimensions.get('window').width - 55, 450),
     height: 35,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: '#000000',
-    borderRadius: 10,
+    marginTop: 20,
+    borderWidth: 0.5,
+    borderColor: '#000',
+    borderRadius: 5,
+  },
+  searchInput: {
+    textAlign: 'center',
+    flex: 1,
+    height: 35,
     fontFamily: 'montserrat',
   },
   title: {
     fontSize: 20,
-    // fontWeight: 'bold',
   },
   subredditName: {
     fontFamily: 'montserrat',
     width: '100%',
-    // textAlign: 'left',
   },
   separator: {
     marginVertical: 30,
