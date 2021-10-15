@@ -12,6 +12,7 @@ import { translate } from '../api/translate-api';
 import { Child } from '../types/subredditData';
 import { usePrevious } from '../hooks/usePrevious';
 import { Text, View } from './Themed';
+import { ThemeContext, themes } from '../constants/Colors';
 
 type PostPreviewProps = {
   data: Child;
@@ -58,7 +59,15 @@ export const PostPreview = (props: PostPreviewProps) => {
         }}
       >
         <TouchableOpacity onPress={updateTitle} aria-label="translate">
-          <MaterialIcons name="translate" size={24} color="black" />
+          <ThemeContext.Consumer>
+            {(theme) => (
+              <MaterialIcons
+                name="translate"
+                size={24}
+                color={themes[theme].text}
+              />
+            )}
+          </ThemeContext.Consumer>
         </TouchableOpacity>
       </View>
     </View>

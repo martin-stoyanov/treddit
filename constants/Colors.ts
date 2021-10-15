@@ -1,7 +1,9 @@
+import React from 'react';
+
 const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
 
-export default {
+export const themes = {
   light: {
     text: '#000',
     background: '#fff',
@@ -17,3 +19,6 @@ export default {
     tabIconSelected: tintColorDark,
   },
 };
+
+export const ThemeContext = React.createContext<'light' | 'dark'>('light');
+ThemeContext.displayName = 'theme';
