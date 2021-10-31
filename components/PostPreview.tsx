@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import removeMarkdown from 'markdown-to-text';
 
 import { translate } from '../api/translate-api';
 import { Child } from '../types/subredditData';
@@ -16,6 +17,18 @@ import { ThemeContext, themes } from '../constants/Colors';
 
 type PostPreviewProps = {
   data: Child;
+};
+
+/**
+ * reformat a post's content. The function:
+ * 1. turn a post's text from markdown into plain text
+ * 2. It removes any newlines from the string
+ * 3. It returns the first 100 characters
+ */
+const parseContent = (mdText: string) => {
+  return removeMarkdown(mdText)
+    .replace(/(\r\n|\n|\r)/gm, '')
+    .substring(0, 100);
 };
 
 export const PostPreview = (props: PostPreviewProps) => {
@@ -41,19 +54,34 @@ export const PostPreview = (props: PostPreviewProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text key={`${postid}-title`} style={styles.title}>
-        {title}
-      </Text>
-      {content ? (
-        <Text key={postid} style={styles.post}>
-          {content}
+    <View
+      style={[styles.container, { flexDirection: content ? 'column' : 'row' }]}
+    >
+      <View
+        style={{
+          flexDirection: 'column',
+          width: content
+            ? Math.min(Dimensions.get('window').width - 35, 450)
+            : Math.min(Dimensions.get('window').width - 65, 420),
+        }}
+      >
+        <Text
+          key={`${postid}-title`}
+          style={[styles.title, { marginBottom: content ? 0 : 15 }]}
+        >
+          {title}
         </Text>
-      ) : null}
+        {content ? (
+          <Text key={postid} style={styles.post}>
+            {parseContent(content)}
+          </Text>
+        ) : null}
+      </View>
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'flex-end',
+          marginTop: content ? 0 : 10,
           marginBottom: 10,
           marginRight: 10,
         }}
@@ -95,7 +123,7 @@ const styles = StyleSheet.create({
   },
   post: {
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
     marginLeft: 15,
     marginRight: 15,
     fontFamily: 'montserrat',
